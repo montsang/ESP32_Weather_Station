@@ -9,9 +9,10 @@ import sh1106
 import dht
 import ds1302
 import _thread
+import ntptime
 from urequests import get
 from ujson import loads
-from time import sleep, sleep_ms
+from time import sleep, sleep_ms, localtime
 from machine import SPI, Pin
 
 
@@ -65,6 +66,17 @@ display.text("> "+ w, 0, 53)
 display.show()
 
 sleep(3)
+
+#NTP Time Sync
+try:
+    ntptime.settime()
+except Exception as e:
+    print(e)
+    pass;
+else:
+    ntp_time = localtime()
+    rtc.adjust(ntp_time[2], ntp_time[1], ntp_time[0], ntp_time[6], ntp_time[3]+ 8, ntp_time[4], ntp_time[5])   # ntp_time[3]+ TIMEZONE
+
 
 def rtc_thr():
     while True:
